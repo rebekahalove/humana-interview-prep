@@ -1,8 +1,8 @@
 # Configuration
 
-This repository is designed to be copied as a general-purpose document RAG template. Runtime
-choices live in the root `.env.example`, grouped by the module that owns them. Application code
-does not provide a second set of deployable defaults.
+Humana Interview Prep keeps runtime choices in the root `.env.example`, grouped by the module that
+owns them. Application code does not provide a second set of deployable defaults. Keep local
+credentials and machine-specific overrides in the ignored `.env` file.
 
 ## Precedence
 
@@ -10,7 +10,11 @@ The backend loads `.env.example` first and `.env` second. The example file is th
 version-controlled baseline, while `.env` contains machine-specific overrides and secrets. Vite
 uses the same root directory for its `VITE_*` values.
 
-For a new project:
+`GENERATION_FALLBACK_CITATION_COUNT` remains accepted for backwards-compatible configuration
+parsing, but it has no effect. The service never creates a citation unless the answer provider
+explicitly supplies a chunk ID that was retrieved.
+
+To create a fresh local configuration from the committed baseline:
 
 ```bash
 cp .env.example .env

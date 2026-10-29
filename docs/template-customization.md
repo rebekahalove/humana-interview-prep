@@ -1,54 +1,83 @@
-# Template customization checklist
+# Humana Interview Prep customization record
 
-Use this checklist immediately after creating a repository from `full-stack-rag-template`. Make
-the identity and infrastructure choices before running migrations so the derived project never
-shares application credentials, databases, or telemetry names with another project.
+This repository was derived from `full-stack-rag-template`. This record captures the selected
+identity, completed customization, and setup that still requires local credentials or shared
+infrastructure access.
 
 ## 1. Choose the project identity
 
-Record these values for the derived application:
+The project uses these values:
 
-| Purpose | Template value | Example derived value |
+| Purpose | Template value | Humana Interview Prep value |
 | --- | --- | --- |
-| Repository and folder | `full-stack-rag-template` | `policy-assistant` |
-| Backend display name | `Full-stack RAG Template API` | `Policy Assistant API` |
-| Frontend display name | `RAG Workbench` | `Policy Assistant` |
-| Short UI mark | `R` | `P` |
-| PostgreSQL role | `rag_template` | `policy_assistant` |
-| Development database | `rag_template` | `policy_assistant` |
-| Test database | `rag_template_test` | `policy_assistant_test` |
-| OpenTelemetry service | `full-stack-rag-template-api` | `policy-assistant-api` |
-| OpenTelemetry tracer | `full-stack-rag-template` | `policy-assistant` |
+| Repository and folder | `full-stack-rag-template` | `humana-interview-prep` |
+| Backend display name | `Full-stack RAG Template API` | `Humana Interview Prep API` |
+| Frontend display name | `RAG Workbench` | `Humana Interview Prep` |
+| Short UI mark | `R` | `H` |
+| PostgreSQL role | `rag_template` | `humana_interview_prep` |
+| Development database | `rag_template` | `humana_interview_prep` |
+| Test database | `rag_template_test` | `humana_interview_prep_test` |
+| OpenTelemetry service | `full-stack-rag-template-api` | `humana-interview-prep-api` |
+| OpenTelemetry tracer | `full-stack-rag-template` | `humana-interview-prep` |
 
-The Python and npm package names are private implementation identifiers and may remain generic.
-Rename them when the derived project will publish packages or when consistent artifact naming is
-important.
+The Python and npm package names have also been renamed for consistent artifact naming.
 
 ## 2. Create local configuration
 
-Copy the example file and edit the new, ignored file:
+The committed `.env.example` and ignored local `.env` contain the selected application, database,
+frontend, telemetry, and model values. The selected baseline is OpenAI
+`text-embedding-3-small` with `gpt-4.1-mini`. Add `OPENAI_API_KEY` to `.env` before real ingestion
+or question answering.
+
+To rebuild the local file from the committed baseline if needed:
 
 ```bash
 cp .env.example .env
 ```
 
-At minimum, replace:
+The customized fields are:
 
 - `APP_NAME`, `APP_DESCRIPTION`, and `APP_VERSION`;
 - `DATABASE_URL` and `TEST_DATABASE_URL`, including the role, password, and database names;
 - `VITE_APP_NAME`, `VITE_APP_MARK`, `VITE_APP_TAGLINE`, and `VITE_APP_DESCRIPTION`;
 - `OTEL_SERVICE_NAME` and `OTEL_TRACER_NAME`;
-- the credentials and model selections for the chosen embedding and chat providers.
+- the model selections for the chosen embedding and chat providers. Provider credentials remain
+  local-only and are not recorded in version control.
 
 Never put shared PostgreSQL administrator credentials in this repository. Provider keys and local
 application passwords belong only in `.env` or a deployment secret manager.
 
-## 3. Provision isolated database resources
+## 3. Install project dependencies
 
-The reference launcher expects the reusable `postgresql-for-all-projects` container maintained by
-the sibling `shared-postgresql` project. Provision one login role plus separate development and
-test databases for the derived project from that infrastructure project. Do not reuse the
-template's `rag_template` role or either template database across applications.
+Install the toolchains and locked dependencies before running migrations or tests. The template
+requires Python 3.12+, `uv`, Node.js 20+, and npm.
+
+From the repository root, run:
+
+```bash
+cd backend && uv sync --dev
+cd ../frontend && npm ci
+cd ..
+```
+
+This installs pytest, pytest-asyncio, Ruff, and the backend runtime from `backend/uv.lock`, plus
+the frontend dependencies from `frontend/package-lock.json`. If browser coverage is needed, also
+install Playwright once with:
+
+```bash
+make e2e-setup
+```
+
+Use the lockfiles for repeatable setup; do not install pytest or application dependencies ad hoc
+outside the project environment.
+
+## 4. Provision isolated database resources
+
+The launcher expects the reusable `postgresql-for-all-projects` container maintained by the
+sibling `shared-postgresql` project. Provision the `humana_interview_prep` login role plus the
+`humana_interview_prep` development database and `humana_interview_prep_test` test database from
+that infrastructure project. The ignored `.env` contains the application password that must be
+used for the role.
 
 After updating `.env`, apply the complete schema:
 
@@ -60,9 +89,10 @@ make migrate
 The test database name must contain `test`; the integration harness deliberately rejects other
 names before running migrations or cleanup.
 
-## 4. Customize the product boundary
+## 5. Customize the product boundary
 
-Review the reference application before treating it as production-ready:
+The initial product boundary is trusted local development. Review these limitations before
+treating the application as production-ready:
 
 - authentication, authorization, tenancy, and rate limiting are intentionally absent;
 - uploaded files use local storage rather than managed object storage;
@@ -75,7 +105,7 @@ Review the reference application before treating it as production-ready:
 
 Document every decision that changes these boundaries in the derived repository.
 
-## 5. Replace or extend evaluation data
+## 6. Replace or extend evaluation data
 
 Keep `evaluation/datasets/example.json` and `evaluation/trials/example.json` as a fast harness
 smoke test. The synthetic starter benchmark is useful for regression testing general document RAG,
@@ -91,7 +121,7 @@ make evaluate DATASET=evaluation/datasets/your-project.json \
 
 Do not place credentials, confidential source documents, or generated reports in version control.
 
-## 6. Verify before the first project commit
+## 7. Verify before the first project commit
 
 Run the reusable checks:
 
@@ -111,8 +141,7 @@ rg -n 'full-stack-rag-template|rag_template|RAG Workbench' \
 Occurrences in historical migration identifiers or documentation examples may be intentional;
 review rather than blindly replacing them.
 
-## 7. Publish and protect the repository
+## 8. Publish and protect the repository
 
-For the source repository, enable GitHub's **Template repository** setting. For a derived project,
-protect `main`, require pull requests and status checks, and require at least one reviewer who is
+Protect `main`, require pull requests and status checks, and require at least one reviewer who is
 not the account that authored the change.

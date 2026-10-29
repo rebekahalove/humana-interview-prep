@@ -83,9 +83,15 @@ to use only supplied evidence. Retrieved document content is quoted as untrusted
 maps model references back to stored metadata and returns an excerpt, filename, heading, pages, and
 score for each source.
 
-The service returns `insufficient_evidence: true` when retrieval returns no candidates or the
-answer provider determines the available text does not support the question. This decision should
-be evaluated empirically; provider prose alone is not a reliable confidence signal.
+Retrieval does not by itself prove that a generated answer is supported. A source is returned only
+when the answer provider explicitly cites that chunk ID and the ID resolves to one of the retrieved
+chunks. If the provider returns no valid cited chunk IDs, the service returns no sources and marks
+the answer `insufficient_evidence: true`, even if retrieval returned relevant-looking context.
+
+The service also returns `insufficient_evidence: true` when retrieval returns no candidates or the
+answer provider explicitly determines the available text does not support the question. A valid
+citation does not override an explicit insufficient-evidence response. This conservative behavior
+keeps an uncited answer distinct from one with verified citation references.
 
 ## Evaluation
 

@@ -1,9 +1,12 @@
-# Full-stack RAG template
+# Humana Interview Prep
 
-A reusable, local-first starting point for document-grounded RAG applications. The included
-reference application uploads PDF, DOCX, and Markdown documents and answers questions about one
-selected document. The backend uses FastAPI, PostgreSQL full-text search, and pgvector; the
-frontend uses React and TypeScript.
+A local-first, document-grounded workspace for preparing for Humana interviews. Upload job
+descriptions, company research, benefits material, personal preparation notes, and other PDF,
+DOCX, or Markdown sources, then ask questions about one selected document. Answers retain source
+citations so preparation stays anchored to the supplied material.
+
+The backend uses FastAPI, PostgreSQL full-text search, and pgvector. The frontend uses React and
+TypeScript.
 
 ## Features
 
@@ -15,13 +18,18 @@ frontend uses React and TypeScript.
 - Safe file handling, explicit insufficient-evidence answers, and prompt-injection boundaries
 - Unit, API integration, PostgreSQL/pgvector integration, frontend, and browser tests
 
-## Using this template
+## Project identity
 
-Create a repository from this template, then follow the
-[template customization checklist](docs/template-customization.md) before provisioning project
-resources. The checklist identifies the intentionally generic application, database, telemetry,
-and package names that each derived project should replace. Evaluation fixtures remain synthetic
-and can be kept as a regression baseline or replaced with a domain-specific benchmark.
+This repository was created from `full-stack-rag-template` and uses isolated local resources:
+
+- application role and development database: `humana_interview_prep`;
+- test database: `humana_interview_prep_test`;
+- OpenTelemetry service: `humana-interview-prep-api`;
+- OpenTelemetry tracer: `humana-interview-prep`.
+
+The synthetic evaluation fixtures remain a general regression baseline. Add a reviewed,
+project-specific interview-preparation dataset before using evaluation results to choose a
+production model or retrieval configuration.
 
 ## Quick start
 
@@ -32,15 +40,18 @@ topology uses the reusable sibling services described in the development guide.
 ```bash
 cp .env.example .env
 # Add credentials for the embedding and chat providers selected in .env.
+cd backend && uv sync --dev
+cd ../frontend && npm ci
+cd ..
 make db-up
-cd backend && uv sync --dev && uv run alembic upgrade head
+make migrate
 ```
 
 The database service lives outside this repository in the sibling `shared-postgresql` project.
-The reference configuration uses the dedicated `rag_template` role plus the `rag_template` and
-`rag_template_test` databases. A derived project must choose unique resource names before
-provisioning them. Host-run applications connect through `localhost:5434`; containers can join
-the `postgresql-for-all-projects-network` Docker network.
+Provision the dedicated `humana_interview_prep` role plus the `humana_interview_prep` and
+`humana_interview_prep_test` databases there before running migrations. Host-run applications
+connect through `localhost:5434`; containers can join the
+`postgresql-for-all-projects-network` Docker network.
 
 For normal development, start the shared containers, apply migrations, and launch both web
 services with:
@@ -74,7 +85,7 @@ suite. See the evaluation guide for the benchmark layout, model trials, scoring,
 For the complete setup, test commands, design, and API contract, see:
 
 - [Development guide](docs/development.md)
-- [Template customization](docs/template-customization.md)
+- [Customization record and checklist](docs/template-customization.md)
 - [Configuration reference](docs/configuration.md)
 - [Shared PostgreSQL instance](docs/shared-postgresql.md)
 - [Architecture](docs/architecture.md)
@@ -83,5 +94,6 @@ For the complete setup, test commands, design, and API contract, see:
 - [Provider selection](docs/providers.md)
 - [Evaluation and tuning](docs/evaluation.md)
 
-The reference application has no user authentication and is intended for trusted local
-development until a derived project adds its own identity and authorization model.
+The application has no user authentication and is intended for trusted local development. Do not
+upload confidential or regulated material until an appropriate identity, authorization,
+retention, and storage design has been implemented.

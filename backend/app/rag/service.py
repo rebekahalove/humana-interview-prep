@@ -355,8 +355,11 @@ class QuestionAnsweringService:
         allowed_ids = {str(chunk.chunk_id) for chunk in retrieved}
         cited_ids = {item for item in generated.cited_chunk_ids if item in allowed_ids}
         cited_chunks = [chunk for chunk in retrieved if str(chunk.chunk_id) in cited_ids]
-        if not cited_chunks and not generated.insufficient_evidence:
-            cited_chunks = retrieved[: self.settings.generation_fallback_citation_count]
+        # Retrieval only identifies potentially relevant context. It does not establish that
+        # the generated answer is supported, so sources must come from explicit provider
+        # references that also resolve to retrieved chunks. Treat an answer with no valid
+        # references as insufficient evidence rather than manufacturing a citation.
+        insufficient_evidence = generated.insufficient_evidence or not cited_chunks
         citations = [
             Citation(
                 chunk_id=chunk.chunk_id,
@@ -385,12 +388,12 @@ class QuestionAnsweringService:
                 retrieved_chunk_ids=[str(chunk.chunk_id) for chunk in retrieved],
                 latency_ms=elapsed_ms,
                 model_name=answer_provider.model_name,
-                metadata={"insufficient_evidence": generated.insufficient_evidence},
+                metadata={"insufficient_evidence": insufficient_evidence},
             )
             await self.session.commit()
         return AnswerResult(
             answer=generated.answer,
-            insufficient_evidence=generated.insufficient_evidence,
+            insufficient_evidence=insufficient_evidence,
             sources=citations,
         )
 

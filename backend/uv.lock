@@ -294,7 +294,7 @@ wheels = [
 ]
 
 [[package]]
-name = "full-stack-rag-template-backend"
+name = "humana-interview-prep-backend"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

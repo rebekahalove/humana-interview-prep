@@ -10,18 +10,18 @@ this repository.
 | Resource | Value |
 | --- | --- |
 | Host endpoint | `localhost:5434` |
-| Reference application role | `rag_template` |
-| Reference development database | `rag_template` |
-| Reference test database | `rag_template_test` |
+| Application role | `humana_interview_prep` |
+| Development database | `humana_interview_prep` |
+| Test database | `humana_interview_prep_test` |
 | Container | `postgresql-for-all-projects` |
 | Shared network | `postgresql-for-all-projects-network` |
 
 The ignored local `.env` contains the complete application and test connection URLs. It must not
 contain the shared server's administrator password.
 
-The names above are template defaults, not shared credentials for every derived application.
-Before provisioning a project created from this template, replace them with a unique role and
-database names by following the [template customization checklist](template-customization.md).
+The names above are reserved for Humana Interview Prep and must not be shared with another
+application. Provision them by following the
+[customization record and checklist](template-customization.md).
 
 ## Start and connect
 
