@@ -47,7 +47,31 @@ The customized fields are:
 Never put shared PostgreSQL administrator credentials in this repository. Provider keys and local
 application passwords belong only in `.env` or a deployment secret manager.
 
-## 3. Provision isolated database resources
+## 3. Install project dependencies
+
+Install the toolchains and locked dependencies before running migrations or tests. The template
+requires Python 3.12+, `uv`, Node.js 20+, and npm.
+
+From the repository root, run:
+
+```bash
+cd backend && uv sync --dev
+cd ../frontend && npm ci
+cd ..
+```
+
+This installs pytest, pytest-asyncio, Ruff, and the backend runtime from `backend/uv.lock`, plus
+the frontend dependencies from `frontend/package-lock.json`. If browser coverage is needed, also
+install Playwright once with:
+
+```bash
+make e2e-setup
+```
+
+Use the lockfiles for repeatable setup; do not install pytest or application dependencies ad hoc
+outside the project environment.
+
+## 4. Provision isolated database resources
 
 The launcher expects the reusable `postgresql-for-all-projects` container maintained by the
 sibling `shared-postgresql` project. Provision the `humana_interview_prep` login role plus the
@@ -65,7 +89,7 @@ make migrate
 The test database name must contain `test`; the integration harness deliberately rejects other
 names before running migrations or cleanup.
 
-## 4. Customize the product boundary
+## 5. Customize the product boundary
 
 The initial product boundary is trusted local development. Review these limitations before
 treating the application as production-ready:
@@ -81,7 +105,7 @@ treating the application as production-ready:
 
 Document every decision that changes these boundaries in the derived repository.
 
-## 5. Replace or extend evaluation data
+## 6. Replace or extend evaluation data
 
 Keep `evaluation/datasets/example.json` and `evaluation/trials/example.json` as a fast harness
 smoke test. The synthetic starter benchmark is useful for regression testing general document RAG,
@@ -97,7 +121,7 @@ make evaluate DATASET=evaluation/datasets/your-project.json \
 
 Do not place credentials, confidential source documents, or generated reports in version control.
 
-## 6. Verify before the first project commit
+## 7. Verify before the first project commit
 
 Run the reusable checks:
 
@@ -117,7 +141,7 @@ rg -n 'full-stack-rag-template|rag_template|RAG Workbench' \
 Occurrences in historical migration identifiers or documentation examples may be intentional;
 review rather than blindly replacing them.
 
-## 7. Publish and protect the repository
+## 8. Publish and protect the repository
 
 Protect `main`, require pull requests and status checks, and require at least one reviewer who is
 not the account that authored the change.

@@ -40,8 +40,11 @@ topology uses the reusable sibling services described in the development guide.
 ```bash
 cp .env.example .env
 # Add credentials for the embedding and chat providers selected in .env.
+cd backend && uv sync --dev
+cd ../frontend && npm ci
+cd ..
 make db-up
-cd backend && uv sync --dev && uv run alembic upgrade head
+make migrate
 ```
 
 The database service lives outside this repository in the sibling `shared-postgresql` project.

@@ -17,8 +17,8 @@ From the repository root:
 2. Replace the placeholder database passwords in `.env`.
 3. Start the standalone PostgreSQL service with `make db-up`.
 4. Install/synchronize backend dependencies with `cd backend && uv sync --dev`.
-5. Apply migrations with `cd backend && uv run alembic upgrade head`.
-6. Install frontend dependencies with `cd frontend && npm install`.
+5. Install frontend dependencies from the lockfile with `cd frontend && npm ci`.
+6. Apply migrations with `make migrate`.
 
 The normal development launcher starts shared PostgreSQL and Jaeger when needed, applies pending
 Alembic migrations, and starts FastAPI and React in the background:
