@@ -1,7 +1,7 @@
 [project]
-name = "full-stack-rag-template-backend"
+name = "humana-interview-prep-backend"
 version = "0.1.0"
-description = "FastAPI backend for document-grounded question answering"
+description = "FastAPI backend for document-grounded Humana interview preparation"
 requires-python = ">=3.12"
 dependencies = [
   "alembic>=1.14,<2",

@@ -108,6 +108,8 @@ class Settings(BaseSettings):
     generation_system_instructions: str
     generation_insufficient_evidence_message: str
     generation_citation_excerpt_characters: int = Field(gt=0)
+    # Retained for backwards-compatible environment parsing; fallback citations are no longer
+    # emitted because only explicit, validated provider references establish support.
     generation_fallback_citation_count: int = Field(ge=0)
     question_max_characters: int = Field(gt=0)
     processing_error_max_characters: int = Field(gt=0)

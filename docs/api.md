@@ -87,8 +87,11 @@ The question must be non-empty. A successful response is:
 }
 ```
 
-When retrieved evidence does not support an answer, the endpoint still returns HTTP 200 with
-`insufficient_evidence: true`, an explanatory answer, and zero or more low-confidence sources.
+When retrieved evidence does not support an answer, or the provider supplies no valid cited chunk
+IDs, the endpoint still returns HTTP 200 with `insufficient_evidence: true`, an explanatory answer,
+and no fabricated sources. Any returned source must correspond to an explicitly cited chunk ID from
+the retrieved context. An explicit insufficient-evidence response may still include valid provider
+citations when the provider supplied them.
 Unknown documents return HTTP 404; documents that are not ready return HTTP 409.
 
 ## Error shape

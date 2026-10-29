@@ -73,12 +73,12 @@ PostgreSQL 16 with pgvector is managed by the standalone sibling project at
 - container: `postgresql-for-all-projects`;
 - persistent volume: `postgresql-for-all-projects-data`;
 - shared network: `postgresql-for-all-projects-network`;
-- reference databases: `rag_template` and `rag_template_test`;
-- reference login role: `rag_template`.
+- project databases: `humana_interview_prep` and `humana_interview_prep_test`;
+- project login role: `humana_interview_prep`.
 
-These names are deliberately generic defaults. A project created from this template should choose
-and provision a unique role and database pair before its first migration. See the
-[template customization checklist](template-customization.md).
+These resources are unique to this project and must be provisioned from the shared infrastructure
+repository before the first migration. See the
+[customization record and checklist](template-customization.md).
 
 This application may start an existing shared container and inspect it:
 
@@ -122,7 +122,7 @@ OpenTelemetry adapter with these exact `.env` settings:
 
 ```dotenv
 OBSERVABILITY_ENABLED=true
-OTEL_SERVICE_NAME=full-stack-rag-template-api
+OTEL_SERVICE_NAME=humana-interview-prep-api
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318/v1/traces
 ```
 
@@ -146,7 +146,7 @@ local applications; use a distinct `OTEL_SERVICE_NAME` for each application. The
 1. enable observability with the settings above and start FastAPI;
 2. upload a small document and ask it one question;
 3. open the collector/backend's own trace UI;
-4. filter by service `full-stack-rag-template-api`;
+4. filter by service `humana-interview-prep-api`;
 5. inspect `http.document.upload` and `http.document.question` traces and their nested `document.*`,
    `rag.*`, and `db.*` spans.
 
@@ -182,7 +182,7 @@ Database-backed integration tests require a disposable database URL in
 absent. The test URL must use an isolated database because migrations and row cleanup may modify
 its contents.
 
-After provisioning, the reference setup includes the isolated `rag_template_test` database:
+After provisioning, the project setup includes the isolated `humana_interview_prep_test` database:
 
 ```bash
 make db-test-up
